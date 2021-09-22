@@ -30,22 +30,23 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
-
+// TODO (01) Create a MarsApiStatus enum with the LOADING, ERROR, and DONE states
+enum class MarsApiStatus { LOADING, ERROR, DONE }
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
 
-    // TODO (02) Rename response LiveData to Status
+    // TODO (02) Change _status to type MarsApiStatus
+    // Rename response LiveData to Status
     // The internal MutableLiveData String that stores the status of the most recent request
-    private val _status = MutableLiveData<String>()
+    private val _status = MutableLiveData<MarsApiStatus>()
 
     // The external immutable LiveData for the request status String
-    val response: LiveData<String>
+    val status: LiveData<MarsApiStatus>
         get() = _status
 
-    // TODO (02) Update the ViewModel to return a LiveData of List<MarsProperty>
-
+    // Update the ViewModel to return a LiveData of List<MarsProperty>
     // Add the LiveData MarsProperty property with an internal Mutable and an external LiveData
     private val _properties = MutableLiveData<List<MarsProperty>>()
 
@@ -67,6 +68,7 @@ class OverviewViewModel : ViewModel() {
      */
     // Update get MarsRealEstateProperties to handle List<MarsProperty>
     private fun getMarsRealEstateProperties() {
+        // TODO (03) Set the correct for LOADING, ERROR and DONE
         // Call the MarsApi to enqueue the Retrofit request, implementing the callbacks
         // Call coroutinesScope.launch and place the rest of the code in it
         coroutineScope.launch {
@@ -74,13 +76,15 @@ class OverviewViewModel : ViewModel() {
             var getPropertiesDeferred = MarsApi.retrofitService.getProperties()
             // Surround the Retrofit code with a try/catch, and set _response appropriately
             try {
+                _status.value = MarsApiStatus.LOADING
+
                 var listResult = getPropertiesDeferred.await()
                 // Update to set _property to the first MarsProperty from ListResult
-               if (listResult.size > 0) {
+                   _status.value = MarsApiStatus.DONE
                    _properties.value = listResult
-               }
             } catch (e : Exception) {
-                _status.value = "Failure: " + e.message
+                _status.value = MarsApiStatus.ERROR
+                _properties.value = ArrayList()
             }
         }
     }
