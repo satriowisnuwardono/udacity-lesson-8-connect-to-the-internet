@@ -20,13 +20,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- TODO (08) Add the ViewModel data variable to this layout -->
+    <!-- Add the ViewModel data variable to this layout -->
+    <!-- TODO (03) Switch from using viewModel to MarsProperty type -->
     <data>
         <variable
-            name="viewModel"
-            type="com.example.android.marsrealestate.overview.OverviewViewModel" />
+            name="property"
+            type="com.example.android.marsrealestate.network.MarsProperty" />
     </data>
-    <!-- TODO (09) Set the app:imageUrl attribute to viewModel.property.imgSrcUrl -->
+    <!-- Set the app:imageUrl attribute to viewModel.property.imgSrcUrl -->
     <ImageView
         android:id="@+id/mars_image"
         android:layout_width="match_parent"
@@ -34,6 +35,6 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:padding="2dp"
-        app:imageUrl="@{viewModel.property.imgSrcUrl}"
+        app:imageUrl="@{property.imgSrcUrl}"
         tools:src="@tools:sample/backgrounds/scenic"/>
 </layout>

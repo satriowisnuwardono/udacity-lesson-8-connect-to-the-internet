@@ -44,11 +44,13 @@ class OverviewViewModel : ViewModel() {
     val response: LiveData<String>
         get() = _status
 
-    // TODO (03) Add the LiveData MarsProperty property with an internal Mutable and an external LiveData
-    private val _property = MutableLiveData<MarsProperty>()
+    // TODO (02) Update the ViewModel to return a LiveData of List<MarsProperty>
 
-    val property: LiveData<MarsProperty>
-    get() = _property
+    // Add the LiveData MarsProperty property with an internal Mutable and an external LiveData
+    private val _properties = MutableLiveData<List<MarsProperty>>()
+
+    val properties: LiveData<List<MarsProperty>>
+    get() = _properties
     // Create a coroutine Job and a CoroutineScope using the Main Dispatcher
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -73,9 +75,9 @@ class OverviewViewModel : ViewModel() {
             // Surround the Retrofit code with a try/catch, and set _response appropriately
             try {
                 var listResult = getPropertiesDeferred.await()
-                // TODO (04) Update to set _property to the first MarsProperty from ListResult
+                // Update to set _property to the first MarsProperty from ListResult
                if (listResult.size > 0) {
-                   _property.value = listResult[0]
+                   _properties.value = listResult
                }
             } catch (e : Exception) {
                 _status.value = "Failure: " + e.message
