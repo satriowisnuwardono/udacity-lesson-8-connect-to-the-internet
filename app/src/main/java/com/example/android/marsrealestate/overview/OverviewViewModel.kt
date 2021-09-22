@@ -29,20 +29,27 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
 
+    // TODO (02) Rename response LiveData to Status
     // The internal MutableLiveData String that stores the status of the most recent request
-    private val _response = MutableLiveData<String>()
+    private val _status = MutableLiveData<String>()
 
     // The external immutable LiveData for the request status String
     val response: LiveData<String>
-        get() = _response
+        get() = _status
 
-    // TODO (04) Create a coroutine Job and a CoroutineScope using the Main Dispatcher
+    // TODO (03) Add the LiveData MarsProperty property with an internal Mutable and an external LiveData
+    private val _property = MutableLiveData<MarsProperty>()
+
+    val property: LiveData<MarsProperty>
+    get() = _property
+    // Create a coroutine Job and a CoroutineScope using the Main Dispatcher
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
@@ -59,21 +66,23 @@ class OverviewViewModel : ViewModel() {
     // Update get MarsRealEstateProperties to handle List<MarsProperty>
     private fun getMarsRealEstateProperties() {
         // Call the MarsApi to enqueue the Retrofit request, implementing the callbacks
-        // TODO (05) Call coroutinesScope.launch and place the rest of the code in it
+        // Call coroutinesScope.launch and place the rest of the code in it
         coroutineScope.launch {
-            // TODO (06) Call MarsApi.retrofitService.getProperties and call await on the Defered
+            // Call MarsApi.retrofitService.getProperties and call await on the Defered
             var getPropertiesDeferred = MarsApi.retrofitService.getProperties()
+            // Surround the Retrofit code with a try/catch, and set _response appropriately
             try {
                 var listResult = getPropertiesDeferred.await()
-                _response.value = "Success: ${listResult.size} Mars properties retrieved"
-            } catch (t:Throwable) {
-                _response.value = "Failure: " + t.message
+                // TODO (04) Update to set _property to the first MarsProperty from ListResult
+               if (listResult.size > 0) {
+                   _property.value = listResult[0]
+               }
+            } catch (e : Exception) {
+                _status.value = "Failure: " + e.message
             }
         }
     }
-
-    // TODO (07) Surround the Retrofit code with a try/catch, and set _response appropriately
-    // TODO (08) Cancel the Coroutine Job when the ViewModel id finished in onCleared
+    // Cancel the Coroutine Job when the ViewModel id finished in onCleared
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
