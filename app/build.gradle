@@ -92,6 +92,7 @@ dependencies {
     // Glide
     implementation "com.github.bumptech.glide:glide:$version_glide"
 
+    // TODO (01) Add the Gradle dependency for the RecyclerView
     // RecyclerView
     implementation "androidx.recyclerview:recyclerview:$version_recyclerview"
 
@@ -109,9 +110,4 @@ dependencies {
 
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"
 
-    // Add the Glide Library dependency
-    implementation "com.github.bumptech.glide:glide:$version_glide"
-
-    // TODO (01) Add the Gradle dependency for the RecyclerView
-    implementation "androidx.recyclerview:recyclerview:$version_recyclerview"
 }

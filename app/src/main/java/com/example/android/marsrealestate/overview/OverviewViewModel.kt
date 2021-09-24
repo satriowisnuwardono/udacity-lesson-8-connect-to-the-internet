@@ -30,14 +30,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
-// TODO (01) Create a MarsApiStatus enum with the LOADING, ERROR, and DONE states
+// Create a MarsApiStatus enum with the LOADING, ERROR, and DONE states
 enum class MarsApiStatus { LOADING, ERROR, DONE }
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
 
-    // TODO (02) Change _status to type MarsApiStatus
+    // Change _status to type MarsApiStatus
     // Rename response LiveData to Status
     // The internal MutableLiveData String that stores the status of the most recent request
     private val _status = MutableLiveData<MarsApiStatus>()
@@ -52,6 +52,11 @@ class OverviewViewModel : ViewModel() {
 
     val properties: LiveData<List<MarsProperty>>
     get() = _properties
+    // TODO (05) Add a _navigateToSelectedProperty MutableLiveData externalized as LiveData
+    private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
+    val navigateToSelectedProperty: LiveData<MarsProperty>
+    get() =  _navigateToSelectedProperty
+
     // Create a coroutine Job and a CoroutineScope using the Main Dispatcher
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -68,7 +73,7 @@ class OverviewViewModel : ViewModel() {
      */
     // Update get MarsRealEstateProperties to handle List<MarsProperty>
     private fun getMarsRealEstateProperties() {
-        // TODO (03) Set the correct for LOADING, ERROR and DONE
+        // Set the correct for LOADING, ERROR and DONE
         // Call the MarsApi to enqueue the Retrofit request, implementing the callbacks
         // Call coroutinesScope.launch and place the rest of the code in it
         coroutineScope.launch {
@@ -92,5 +97,14 @@ class OverviewViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+    }
+
+    // TODO (06) Add displayPropertyDetails and displayPropertyDetailsComplete methods
+    fun displayPropertyDetails(marsProperty: MarsProperty) {
+        _navigateToSelectedProperty.value = marsProperty
+    }
+
+    fun displayPropertyDetailsComplete() {
+        _navigateToSelectedProperty.value = null
     }
 }
