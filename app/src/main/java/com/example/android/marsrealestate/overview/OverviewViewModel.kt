@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.android.marsrealestate.network.MarsApi
+import com.example.android.marsrealestate.network.MarsApiFilter
 import com.example.android.marsrealestate.network.MarsProperty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +53,7 @@ class OverviewViewModel : ViewModel() {
 
     val properties: LiveData<List<MarsProperty>>
     get() = _properties
-    // TODO (05) Add a _navigateToSelectedProperty MutableLiveData externalized as LiveData
+    // Add a _navigateToSelectedProperty MutableLiveData externalized as LiveData
     private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
     val navigateToSelectedProperty: LiveData<MarsProperty>
     get() =  _navigateToSelectedProperty
@@ -65,20 +66,23 @@ class OverviewViewModel : ViewModel() {
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
     init {
-        getMarsRealEstateProperties()
+        // TODO (05) Add MarsApiFilter.SHOW_ALL as a default parameter to the initial getMarsRealEstateProperties
+        getMarsRealEstateProperties(MarsApiFilter.SHOW_ALL)
     }
 
     /**
      * Sets the value of the status LiveData to the Mars API status.
      */
     // Update get MarsRealEstateProperties to handle List<MarsProperty>
-    private fun getMarsRealEstateProperties() {
+    // TODO (03) Add MarsApiFilter parameter to getMarsRealEstateProperties
+    private fun getMarsRealEstateProperties(filter: MarsApiFilter) {
         // Set the correct for LOADING, ERROR and DONE
         // Call the MarsApi to enqueue the Retrofit request, implementing the callbacks
         // Call coroutinesScope.launch and place the rest of the code in it
         coroutineScope.launch {
             // Call MarsApi.retrofitService.getProperties and call await on the Defered
-            var getPropertiesDeferred = MarsApi.retrofitService.getProperties()
+            // TODO (04) Add filter to getProperties() with filter.value
+            var getPropertiesDeferred = MarsApi.retrofitService.getProperties(filter.value)
             // Surround the Retrofit code with a try/catch, and set _response appropriately
             try {
                 _status.value = MarsApiStatus.LOADING
@@ -99,12 +103,17 @@ class OverviewViewModel : ViewModel() {
         viewModelJob.cancel()
     }
 
-    // TODO (06) Add displayPropertyDetails and displayPropertyDetailsComplete methods
+    // Add displayPropertyDetails and displayPropertyDetailsComplete methods
     fun displayPropertyDetails(marsProperty: MarsProperty) {
         _navigateToSelectedProperty.value = marsProperty
     }
 
     fun displayPropertyDetailsComplete() {
         _navigateToSelectedProperty.value = null
+    }
+
+    // TODO (06) add update filter method that takes a filter input and re-gets the properties
+    fun updateFilter(filter:MarsApiFilter){
+        getMarsRealEstateProperties(filter)
     }
 }
